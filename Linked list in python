@@ -1,0 +1,13 @@
+class Node:
+    def __init__(self,data):
+       self.item=data
+       self.ref=None
+class LinkedList:
+    def __init__(self):
+        self.start_node=None
+    def Viewlist(self):
+        if self.start_node is None:
+            print("list has no element")
+            return
+        else:
+            n = self.start_node
