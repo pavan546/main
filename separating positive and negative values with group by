@@ -1,0 +1,24 @@
+grouped = newdata.groupby('combo') 
+
+positive = pd.DataFrame()
+negative = pd.DataFrame()
+mixed = pd.DataFrame()
+
+for name, group in grouped:
+    
+#for negative values     
+    if ((any(group['watch_metric_score_input.metric_value'] < 0) == True  and any(group['watch_metric_score_input.metric_value'] > 0) == False)): # Negative          
+        negative = negative.append(group)
+        
+#for positive values        
+    elif (any(group['watch_metric_score_input.metric_value'] < 0) == False  and any(group['watch_metric_score_input.metric_value'] >= 0) == True): # Positive        
+        positive = positive.append(group)
+        
+#for mixed values        
+    elif (any(group['watch_metric_score_input.metric_value'] < 0) == True  and any(group['watch_metric_score_input.metric_value'] > 0) == True): # Mixed
+        mixed = mixed.append(group)
+  
+print('\n\n Positive : \n\n', positive)
+print('\n\n Negative : \n\n', negative)
+print('\n\n Mixed : \n\n', mixed)
+negative.to_csv(r'C:/Users/pbobbala/Watch/Data/negative.csv')
