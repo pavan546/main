@@ -1,0 +1,6 @@
+import pandas as pd
+from datetime import date, timedelta
+
+data=pd.read_csv("C:/Users/pbobbala/Watch/Data/bf3.csv", parse_dates=['data_date'])
+data.date = pd.to_datetime(data['data_date'])
+s=data.set_index('data_date').groupby('combined').apply(lambda x : x.resample('D').max().ffill()).reset_index(level=1)
