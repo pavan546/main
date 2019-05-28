@@ -1,0 +1,5 @@
+z = newdata.groupby('combo').value.apply(lambda x: pd.Series([(x > 0).sum(),(x < 0).sum(), (x == 0).sum()])).unstack()
+z=z.rename(columns={'0':'Positive'})
+zz=z.rename(columns={'1':'negative'})
+zz=z.rename(columns={'2':'Zeros'})
+z
