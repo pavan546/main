@@ -1,0 +1,14 @@
+import pandas as pd
+from datetime import date, timedelta
+
+bf4_data=pd.read_csv("input.csv", parse_dates=['data_date'])
+bf4_data.data_date = pd.to_datetime(bf4_data['data_date'])
+bf4_data['combined']=bf4_data['metric_name']+' '+bf4_data['dimension_key_group'].astype(str)
+count_data = bf4_data.groupby('combined').metric_value.apply(lambda x: pd.Series([(x > 0).sum(),(x < 0).sum(), (x == 0).sum()])).unstack()
+print(count_data)
+filldates_data = bf4_data.set_index('data_date').groupby('combined').apply(lambda x : x.resample('D').max()).reset_index(level=1)
+filldates_data['metric_value']=filldates_data['metric_value'].fillna(0)
+filldates_data=filldates_data.rename(columns={'combined' : 'combo'})
+filldates_data['combo']=filldates_data['combo'].ffill()
+fcount_data = filldates_data.groupby('combo').metric_value.apply(lambda x: pd.Series([(x > 0).sum(),(x < 0).sum(), (x == 0).sum()])).unstack()
+print(fcount_data)
