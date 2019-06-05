@@ -1,0 +1,12 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+data = pd.read_csv("C:Data/input1.csv")
+df3= data[data['metric_value']==0]
+data_zero= df3.rename(columns={"metric_value": "value_zero"})
+pd.value_counts(data['metric_value']==0)
+final= data.append(data_zero)
+final
+final_new= pd.pivot_table(final, index= 'dimension_key_group', columns= 'metric_name', values=['metric_value', 'value_zero'], aggfunc= 'count')
+final_new
+final_new.to_csv(r"C:Data/input1count.csv")
