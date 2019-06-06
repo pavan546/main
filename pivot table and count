@@ -8,26 +8,33 @@ pd.value_counts(data['metric_value']==0)
 final= data.append(data_zero)
 final
 final_new= pd.pivot_table(final, index= 'dimension_key_group', columns= 'metric_name', values=['metric_value', 'value_zero'], aggfunc= 'count')
-final_new
-final_new.to_csv(r"C:Data/input1count.csv")
 zerodata = pd.DataFrame(final_new['value_zero'])
 zerodata.columns
 bafee = zerodata.loc[zerodata['BA_FEE_TOTAL'] == 140]
-bafeezero = print('BA_FEE_TOTAL',bafee['BA_FEE_TOTAL'])
+bafee['metric_name']=np.repeat('BA_FEE_TOTAL',len(bafee['BA_FEE_TOTAL']))
+bafeezero=bafee['metric_name']
 #print(bafeezero)
 expsen = zerodata.loc[zerodata['EXPENSE_SENDER'] == 140]
-expsenzero = print('EXPENSE_SENDER',expsen['EXPENSE_SENDER'])
+expsen['metric_name']=np.repeat('EXPENSE_SENDER',len(expsen['EXPENSE_SENDER']))
+expsenzero = expsen['metric_name']
 #print(expsenzero)
 fxfee = zerodata.loc[zerodata['FX_FEE_TOTAL'] == 140]
-fxfeezero = print('FX_FEE_TOTAL',fxfee['FX_FEE_TOTAL'])
+fxfee['metric_name']=np.repeat('FX_FEE_TOTAL',len(fxfee['FX_FEE_TOTAL']))
+fxfeezero = fxfee['metric_name']
 ntpv = zerodata.loc[zerodata['NTPV_SENDER'] == 140]
-ntpvzero = print('NTPV_SENDER',ntpv['NTPV_SENDER'])
+ntpv['metric_name']=np.repeat('NTPV_SENDER',len(ntpv['NTPV_SENDER']))
+ntpvzero = ntpv['NTPV_SENDER']
 revser = zerodata.loc[zerodata['REVENUE_SENDER'] == 140]
-revserzero = print('REVENUE_SENDER',revser['REVENUE_SENDER'])
+revser['metric_name']=np.repeat('REVENUE_SENDER',len(revser['REVENUE_SENDER']))
+revserzero = revser['metric_name']
 revtot = zerodata.loc[zerodata['REVENUE_TOTAL'] == 140]
-revtotzero = print('REVENUE_TOTAL',revtot['REVENUE_TOTAL'])
+revtot['metric_name']=np.repeat('REVENUE_TOTAL',len(revtot['REVENUE_TOTAL']))
+revtotzero = revtot['metric_name']
 txncont = zerodata.loc[zerodata['TXN_COUNT_SENDER'] == 140]
-txncontzero = print('TXN_COUNT_SENDER',txncont['TXN_COUNT_SENDER'])
+txncont['metric_name']=np.repeat('TXN_COUNT_SENDER',len(txncont['TXN_COUNT_SENDER']))
+txncontzero = txncont['metric_name']
 xbfee = zerodata.loc[zerodata['XB_FEE_TOTAL'] == 140]
-xbfeezero = print('XB_FEE_TOTAL',xbfee['XB_FEE_TOTAL'])
-pd.to_csv(r"C://Data/zero1.csv")
+xbfee['metric_name']=np.repeat('XB_FEE_TOTAL',len(xbfee['XB_FEE_TOTAL']))
+xbfeezero = xbfee['metric_name']
+frames = [bafeezero,expsenzero,fxfeezero,ntpvzero,revserzero,revtotzero,txncontzero,xbfeezero]
+result = pd.concat(frames)
