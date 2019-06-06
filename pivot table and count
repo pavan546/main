@@ -10,3 +10,24 @@ final
 final_new= pd.pivot_table(final, index= 'dimension_key_group', columns= 'metric_name', values=['metric_value', 'value_zero'], aggfunc= 'count')
 final_new
 final_new.to_csv(r"C:Data/input1count.csv")
+zerodata = pd.DataFrame(final_new['value_zero'])
+zerodata.columns
+bafee = zerodata.loc[zerodata['BA_FEE_TOTAL'] == 140]
+bafeezero = print('BA_FEE_TOTAL',bafee['BA_FEE_TOTAL'])
+#print(bafeezero)
+expsen = zerodata.loc[zerodata['EXPENSE_SENDER'] == 140]
+expsenzero = print('EXPENSE_SENDER',expsen['EXPENSE_SENDER'])
+#print(expsenzero)
+fxfee = zerodata.loc[zerodata['FX_FEE_TOTAL'] == 140]
+fxfeezero = print('FX_FEE_TOTAL',fxfee['FX_FEE_TOTAL'])
+ntpv = zerodata.loc[zerodata['NTPV_SENDER'] == 140]
+ntpvzero = print('NTPV_SENDER',ntpv['NTPV_SENDER'])
+revser = zerodata.loc[zerodata['REVENUE_SENDER'] == 140]
+revserzero = print('REVENUE_SENDER',revser['REVENUE_SENDER'])
+revtot = zerodata.loc[zerodata['REVENUE_TOTAL'] == 140]
+revtotzero = print('REVENUE_TOTAL',revtot['REVENUE_TOTAL'])
+txncont = zerodata.loc[zerodata['TXN_COUNT_SENDER'] == 140]
+txncontzero = print('TXN_COUNT_SENDER',txncont['TXN_COUNT_SENDER'])
+xbfee = zerodata.loc[zerodata['XB_FEE_TOTAL'] == 140]
+xbfeezero = print('XB_FEE_TOTAL',xbfee['XB_FEE_TOTAL'])
+pd.to_csv(r"C://Data/zero1.csv")
