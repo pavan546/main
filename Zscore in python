@@ -1,0 +1,6 @@
+import pandas as pd
+from scipy import stats
+newdata = pd.read_csv("C:/Data/input1.csv")
+newdata.columns
+newdata['metric_value'] = newdata['metric_value']*1.0
+newdata['zscore'] = stats.zscore(newdata['metric_value'])
