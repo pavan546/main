@@ -4,3 +4,12 @@ newdata = pd.read_csv("C:/Data/input1.csv")
 newdata.columns
 newdata['metric_value'] = newdata['metric_value']*1.0
 newdata['zscore'] = stats.zscore(newdata['metric_value'])
+import pandas as pd
+from scipy import stats
+import numpy as np
+newdata = pd.read_csv("C:/Users/Data/input1.csv")
+newdata.columns
+newdata['metric_value'] = newdata['metric_value']*1.0
+zscore = lambda x: (x - x.mean()) / x.std()
+newdata['zscore']=(newdata.groupby(['metric_name','dimension_key_group'])['metric_value'].transform(zscore))
+newdata.to_csv(r"C:/Users/Data/input1zscoresupdated.csv")
