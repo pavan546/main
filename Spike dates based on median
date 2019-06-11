@@ -1,0 +1,71 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+%matplotlib inline
+import seaborn as sns; sns.set()
+data= pd.read_csv("C:/Users/inpot.csv", parse_dates=['data_date'])
+data.head()
+data['month']= data['data_date'].dt.strftime('%b')
+data.head()
+data.drop(data[[ 'dimension_name', 'metric_value', 'utilized_value', 'predicted_value', 'score', 'display_score','Unnamed: 0' ,'status', 'data_ref_date', 'source', 'tenant_id']], axis=1, inplace=True)
+data.head()
+data.set_index('data_date', inplace=True)
+data = data.reset_index()
+data= data.sort_values(by= 'data_date', ascending=True)
+df_max= data.loc[data.groupby("month")["zscore"].idxmax()]
+df_min= data.loc[data.groupby("month")["zscore"].idxmin()]
+df_median= data.groupby("month")["zscore"].median()
+df_max.sort_values(by= 'data_date', ascending=True)
+df_min.sort_values(by= 'data_date', ascending=True)
+df_min= df_min.rename(columns={"zscore": "zscore_min"})
+df_max= df_max.rename(columns={"zscore": "zscore_max"})
+df_min_max  = pd.concat([df_min, df_max], ignore_index=True)
+df_min_max= df_min_max.sort_values(by = 'data_date', ascending=True)
+df_median = df_median.to_frame()
+df_median= df_median.rename(columns={"zscore": "zscore_median"})
+df_median = df_median.reset_index()
+df_final= pd.merge(df_min_max, df_median, how= 'left', on= 'month')
+df_final['median-min']= df_final['zscore_median']-df_final['zscore_min']
+df_final['median-max']= df_final['zscore_max']-df_final['zscore_median']
+df_final['median-min']= df_final['median-min'].fillna(method= 'bfill')
+df_final['median-max']= df_final['median-max'].fillna(method= 'ffill')
+df_final['low_high'] = np.where(df_final['median-min']< df_final['median-max'], 'low', 'high')
+df_final
+dfmin= df_min.rename(columns={"data_date": "date_min","zscore": "zscore_min"})
+dfmax= df_max.rename(columns={"data_date": "date_max","zscore": "zscore_max"})
+dfmin_max= pd.merge(dfmin, dfmax, how= 'outer', on= 'month')
+dfmin_max
+df_5rows= pd.merge(dfmin_max, df_median, how= 'outer', on= 'month')
+df_5rows
+df_5rows['median-min']= np.abs(df_5rows['zscore_median']-df_5rows['zscore_min'])
+df_5rows['median-max']= np.abs(df_5rows['zscore_median']-df_5rows['zscore_max'])
+df_5rows
+df_5rows['True_False']= (df_5rows['median-min'] < df_5rows['median-max'])
+df_5rows
+df_5false = df_5rows[~df_5rows['True_False']]
+df_5true = df_5rows[df_5rows['True_False']]
+df_5false = df_5false.drop('date_max', axis=1)
+df_5false = df_5false.drop('metric_name_y', axis=1)
+df_5false = df_5false.drop('dimension_key_group_y', axis=1)
+df_5false = df_5false.drop('zscore_max', axis=1)
+df_5false = df_5false.drop('median-min', axis=1)
+df_5false = df_5false.drop('median-max', axis=1)
+df_5false = df_5false.drop('True_False', axis=1)
+df_5true = df_5true.drop('date_min', axis=1)
+df_5true = df_5true.drop('metric_name_y', axis=1)
+df_5true = df_5true.drop('dimension_key_group_y', axis=1)
+df_5true = df_5true.drop('zscore_min', axis=1)
+df_5true = df_5true.drop('median-min', axis=1)
+df_5true = df_5true.drop('median-max', axis=1)
+df_5true = df_5true.drop('True_False', axis=1)
+df_5false = df_5false.rename(columns={'date_min' : 'date'})
+df_5false = df_5false.rename(columns={'metric_name_x' : 'metric_name'})
+df_5false = df_5false.rename(columns={'dimension_key_group_x' : 'dimension_key_group'})
+df_5false = df_5false.rename(columns={'zscore_min' : 'zscore'})
+df_5true = df_5true.rename(columns={'date_max' : 'date'})
+df_5true = df_5true.rename(columns={'metric_name_x' : 'metric_name'})
+df_5true = df_5true.rename(columns={'dimension_key_group_x' : 'dimension_key_group'})
+df_5true = df_5true.rename(columns={'zscore_max' : 'zscore'})
+frames = [df_5true, df_5false]
+result = pd.concat(frames)
+result
