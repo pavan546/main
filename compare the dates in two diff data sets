@@ -1,0 +1,21 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+%matplotlib inline
+import seaborn as sns; sns.set()
+data= pd.read_csv("C:/Users/bfspikedates.csv", parse_dates=['spikedate'])
+data.head()
+data['month']= data['spikedate'].dt.strftime('%b')
+data.head()
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+%matplotlib inline
+import seaborn as sns; sns.set()
+mydata= pd.read_csv("C:/Users/bff4spikedates.csv", parse_dates=['date'])
+mydata.head()
+data['combo']=data['metric_name']+''+data['vendor_name']+''+data['month'].astype(str)
+mydata['combo']=mydata['metric_name']+''+mydata['vendor_name']+''+mydata['month'].astype(str)
+df_finall= pd.merge(mydata, data, how= 'left', on= 'combo')
+df_finall['True_False']= (df_finall['date'] == df_finall['spikedate'])
+df_finall
