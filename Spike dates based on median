@@ -76,7 +76,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 %matplotlib inline
 import seaborn as sns; sns.set()
-data= pd.read_csv("C:/Users/pbobbala/Watch/Data/bff4monthlyzscore.csv", parse_dates=['data_date'])
+data= pd.read_csv("C:/Users/bff4monthlyzscore.csv", parse_dates=['data_date'])
 data.head()
 data['month']= data['data_date'].dt.strftime('%b')
 data.head()
