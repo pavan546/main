@@ -1,6 +1,6 @@
 import pandas as pd
+data.columns
 from datetime import date, timedelta
-
-data=pd.read_csv("input.csv", parse_dates=['data_date'])
-data.date = pd.to_datetime(data['data_date'])
-s=data.set_index('data_date').groupby('combined').apply(lambda x : x.resample('D').max().ffill()).reset_index(level=1)
+data=pd.read_csv("D:\data.csv")
+data['combined']=data['Name']+''+data['Type'].astype(str)
+data.set_index('date').groupby('combined').apply(lambda x : x.resample('D').max().ffill()).reset_index(level=1)
