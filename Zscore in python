@@ -14,3 +14,13 @@ newdata['month']= newdata['data_date'].dt.strftime('%b')
 zscore = lambda x: (x - x.mean()) / x.std()
 newdata['zscore']=(newdata.groupby(['metric_name','dimension_key_group','month'])['metric_value'].transform(zscore))
 newdata.to_csv(r"C:/Users/Data/input1zscoresupdated.csv")
+#import pandas as pd
+from scipy import stats
+import numpy as np
+newdata = pd.read_csv("C:/Users/pbobbala/Watch/Data/bff4.csv", parse_dates=['data_date'])
+newdata.columns
+newdata['metric_value'] = newdata['metric_value']*1.0
+newdata['month']= newdata['data_date'].dt.strftime('%b')
+zscore = lambda x: (x - x.mean()) / x.std()
+newdata['zscore']=(newdata.groupby(['metric_name','dimension_key_group','month'])['metric_value'].transform(zscore))
+newdata
