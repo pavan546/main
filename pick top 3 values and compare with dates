@@ -1,0 +1,15 @@
+import pandas as pd
+from scipy import stats
+import numpy as np
+newdata = pd.read_csv("C:/Usersinput.csv", parse_dates=['data_date'])
+newdata.columns
+newdata['month']= newdata['data_date'].dt.strftime('%b')
+data= newdata.groupby(['metric_name', 'company_code', 'country_code', 'trade_corridor', 'fg_ba_fx_xb_other', 'vendor_name','month']).apply(lambda x: x.nlargest(3, 'metric_value')).reset_index(level=0, drop=True)
+data.drop(data[[ 'utilized_value', 'predicted_value', 'score', 'display_score', 'status', 'data_ref_date', 'source', 'tenant_id']], axis=1, inplace=True)
+data.drop(data[['company_code', 'country_code', 'trade_corridor', 'fg_ba_fx_xb_other', 'vendor_name', 'month']], axis=1, inplace=True)
+data= data.groupby(by=['metric_name', 'company_code', 'country_code', 'trade_corridor', 'fg_ba_fx_xb_other', 'vendor_name','metric_value', 'month', 'data_date']).count().reset_index()
+data['count'] = data['data_date'].dt.day
+data['New_Count'] = np.where(data['count'] <= 2, '1','0')
+data['New_Count'] = data['New_Count'].astype(str).astype('int64')
+data_pivot= pd.pivot_table(data, index= ['metric_name','company_code','country_code','trade_corridor','fg_ba_fx_xb_other','vendor_name'], columns= 'month', values=['New_Count'], aggfunc= np.sum, margins=True).reset_index()
+data_pivot
