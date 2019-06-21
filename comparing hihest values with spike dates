@@ -1,0 +1,28 @@
+import pandas as pd
+from scipy import stats
+import numpy as np
+newdata = pd.read_csv("C:/Data/.csv", parse_dates=['data_date'])
+newdata.columns
+newdata['month']= newdata['data_date'].dt.strftime('%b')
+data_new['zscore']=np.abs(data_new['zscore'])
+data_1 = data_new.loc[(data_new.metric_name == 'NTPV_SENDER') | (data_new.metric_name == 'TXN_COUNT_SENDER')]
+data_2 = data_new.loc[(data_new.metric_name != 'NTPV_SENDER') & (data_new.metric_name != 'TXN_COUNT_SENDER')]
+
+data = data_1.append(data_2)
+data= newdata.groupby(['metric_name', 'company_code', 'country_code', 'trade_corridor', 'fg_ba_fx_xb_other', 'vendor_name','month']).apply(lambda x: x.nlargest(3, 'metric_value')).reset_index(level=0, drop=True)
+data.drop(data[[ 'utilized_value', 'predicted_value', 'score', 'display_score', 'status', 'data_ref_date', 'source', 'tenant_id']], axis=1, inplace=True)
+data.drop(data[['company_code', 'country_code', 'trade_corridor', 'fg_ba_fx_xb_other', 'vendor_name', 'month']], axis=1, inplace=True)
+data= data.groupby(by=['metric_name', 'company_code', 'country_code', 'trade_corridor', 'fg_ba_fx_xb_other', 'vendor_name','metric_value', 'month', 'data_date']).count().reset_index()
+data['count'] = data['data_date'].dt.day
+newdata = pd.read_csv("C:/Users.csv", parse_dates=['spikedate'])
+newdata['spikemonth']= newdata['spikedate'].dt.strftime('%b')
+newdata['spikecount'] = newdata['spikedate'].dt.day
+data['combo'] = data['metric_name']+' '+data['vendor_name']+' '+data['month'].astype(str)
+newdata['combo'] = newdata['spike_metric_name']+' '+newdata['spike_vendor_name']+' '+newdata['spikemonth'].astype(str)
+df_final= pd.merge(data, newdata, how= 'left', on= 'combo')
+df_final['count'] = df_final['count'].astype(str).astype('float64')
+df_final['True_False']= (df_final['count'] == df_final['spikecount'])
+df_final['New_Count'] = np.where(df_final['True_False'] == True, '1','0')
+df_final['New_Count'] = df_final['New_Count'].astype(str).astype('int64')
+data_pivot= pd.pivot_table(df_final, index= ['metric_name','company_code','country_code','trade_corridor','fg_ba_fx_xb_other','vendor_name'], columns= 'month', values=['New_Count'], aggfunc= np.sum, margins=True).reset_index()
+data_pivot
