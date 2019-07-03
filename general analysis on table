@@ -1,0 +1,39 @@
+import pandas as pd
+from datetime import date, timedelta
+data = pd.read_csv("C:/Users/pbobbala/Watch/Data/bt_aggregate_0701.csv")
+#filling missing dates key group wise
+data['data_date'] = pd.to_datetime(data['data_date'])
+data['combo']=data['metric_name']+' '+data['company_code']+' '+data['country_code']+' '+data['trade_corridor']+' '+data['vendor_name']
+data.set_index('data_date').groupby(['combo']).apply(lambda x : x.resample('D').max().ffill()).reset_index(level=1)
+data.info()
+# getting positive, negative and mixed key group wise
+grouped = data.groupby('combo') 
+
+positive = pd.DataFrame()
+negative = pd.DataFrame()
+mixed = pd.DataFrame()
+
+for metric_name, group in grouped:
+    
+#for negative values     
+    if ((any(group['metric_value'] < 0) == True  and any(group['metric_value'] > 0) == False)): # Negative          
+        negative = negative.append(group)
+        
+#for positive values        
+    elif (any(group['metric_value'] < 0) == False  and any(group['metric_value'] >= 0) == True): # Positive        
+        positive = positive.append(group)
+        
+#for mixed values        
+    elif (any(group['metric_value'] < 0) == True  and any(group['metric_value'] > 0) == True): # Mixed
+        mixed = mixed.append(group)
+#Zscore calculation monthly and key group wise and pick spike dates
+data['metric_value'] = data['metric_value']*1.0
+data['month']= data['data_date'].dt.strftime('%b')
+zscore = lambda x: (x - x.mean()) / x.std()
+data['zscore_monthly']=(data.groupby(['metric_name','company_code','country_code','trade_corridor','fg_ba_fx_xb_other','vendor_name','month'])['metric_value'].transform(zscore))
+data['zscore_key_wise'] = (data.groupby(['metric_name','company_code','country_code','trade_corridor','fg_ba_fx_xb_other','vendor_name'])['metric_value'].transform(zscore))
+data_1 = data.loc[(data['zscore_monthly'] >=3.5)  | (data['zscore_monthly'] <= -3.5)]
+data_2 = data.loc[(data['zscore_key_wise'] >=4.0)  | (data['zscore_key_wise'] <= -4.0)]
+data_1['freq'] = data_1.groupby(['metric_name','company_code','country_code','trade_corridor','vendor_name'])['tenant_id'].transform('count')
+data_2['freq'] = data_2.groupby(['metric_name','company_code','country_code','trade_corridor','vendor_name'])['tenant_id'].transform('count')
+data_final = pd.merge(data_1,data_2, how = 'outer' , indicator=True)
