@@ -1,0 +1,26 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+%matplotlib inline
+import seaborn as sns
+data = pd.read_csv('C:/Users/input.csv')
+data['data_date'] = pd.to_datetime(data['data_date'])
+fig, (ax1,ax4) = plt.subplots(2,1,figsize=(15,12))
+ax2 = ax1.twinx()
+ax1.plot(data['data_date'], data['metric_value'], '-o', label = 'metricvalue')
+ax2.plot(data['data_date'], data['score'], '-g')
+ax1.plot(data['data_date'], data['forecast_val'], '-o')
+ax1.set_xlabel('dates')
+ax1.set_ylabel('metric_value', color='b')
+ax2.set_ylabel('score', color='g')
+ax4.plot(data['data_date'], data['forecast_val'], '-o')
+ax4.plot(data['data_date'], data['l99_5'], '-o')
+ax4.plot(data['data_date'], data['h99_5'], '-o')
+ax1.tick_params(axis='x', rotation=45)
+ax4.tick_params(axis='x', rotation=45)
+ax1.legend()
+ax2.legend()
+ax4.legend()
+ax1.grid(True)
+ax2.grid(True)
+ax4.grid(True)
